@@ -1,0 +1,41 @@
+PA5 = TOUCH RST [15] ok
+PE0 = TOUCH INT [16] ok
+PB8 = TOUCH SCK [13] (OR) ok
+PB9 = TOUCH SDA [14] (YL) ok
+
+
+define MAX_WIDTH = 480 
+#define MAX_HEIGHT = 320
+
+enum {
+    ROT_0 = 0,
+    ROT_90,
+    ROT_270,
+    ROT_360
+};
+
+typedef uint8_t touch_rot_t;
+
+uint16_t remap(uint16_t value, uint16_t  old_min, uint16_t  old_max, uint16_t  new_min, uint16_t new_max) {
+    return (((value - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min;
+}
+
+void get_touch_point(uint16_t in_x, uint16_t in_y, lv_point_t * p, touch_rot_t rot) {
+    switch (rot) {
+        case 0:    p->x = (lv_coord_t) remap(in_x, 0, MAX_WIDTH, 0, MAX_WIDTH);
+                   p->y = (lv_coord_t) remap(in_y, 0, MAX_HEIGHT, 0, MAX_HEIGHT);
+                   break;
+        case 1:    p->x = (lv_coord_t) remap(in_y, 0, MAX_HEIGHT, 0, MAX_HEIGHT);
+                   p->y = (lv_coord_t) remap(in_x, 0, MAX_WIDTH, 0, MAX_WIDTH);
+                   break;
+        case 2:    p->x = (lv_coord_t) remap(in_x, 0, MAX_WIDTH, MAX_WIDTH, 0);
+                   p->y = (lv_coord_t) remap(in_y, 0, MAX_HEIGHT, MAX_HEIGHT, 0);
+                   break;
+        case 3:    p->x = (lv_coord_t) remap(in_y, 0, MAX_HEIGHT, MAX_HEIGHT, 0);
+                   p->y = (lv_coord_t) remap(in_x, 0, MAX_WIDTH, MAX_WIDTH, 0);
+                   break;
+    }
+              
+}
+
+
